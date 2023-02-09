@@ -1,0 +1,374 @@
+import java.util.Scanner;
+
+class node 
+{
+    private int id;
+    private String name;
+    private double salary;
+    private node next;
+    private node prev;
+ 
+        public node (int d, String n, double s, node nex, node p) 
+        // the node of the elements contains the id, name, salary and the address of the next element
+        {
+            id = d; 
+            name = n;
+            salary = s;
+            next = nex;
+            prev = p;
+        }   
+        
+        public int getId() // returns the id
+        {
+            return id;
+        }
+         public String getName () // returns the name
+        {
+            return name;
+        }
+        public double getSalary () // returns the salary
+        {
+            return salary;
+        }
+        public node getNext() // returns the address of the next element
+        {
+            return next;
+        }
+        public node getPrev()
+        {
+            return prev;
+        }
+        
+        public void setId (int d) // sets the id 
+        {
+            id = d;
+        }
+        public void setName (String n) // sets the name
+        {
+            name = n;
+        }
+        public void setSalary (double s) // sets the salary
+        {
+            salary = s;
+        }
+        public void setNext (node nex) // sets the address to the next element 
+        {
+            next = nex;
+        }
+        public void setPrev (node p)
+        {
+            prev = p;
+        }
+        
+        public void printData() // prints the data of an element
+        {
+            System.out.println("id = " + id);
+            System.out.println("name = " + name);
+            System.out.println("salary = " + salary);
+        }
+}
+
+class doubleLinkedList 
+{
+    private node First;
+    private node Last;
+    public doubleLinkedList ()
+    {
+        First = null;
+        Last = null;
+    }
+    
+    public boolean isEmpty () // check whether the list is empty
+    {
+        if (First == null)
+            return true;
+        else
+            return false;
+    }
+    
+    public node search (int d) // the searching function
+    {
+        node temp = First; // let temp equal the first element of the list 
+        while (temp != null) 
+        {
+            if (temp.getId() == d) // comparing the id in the element with the one we're searching for
+            {
+                return temp; // and then return and that will end the loop
+            }
+            temp = temp.getNext(); // if we didn't find, let temp equal the next element
+        }
+        return temp;
+    }
+    
+    public void insert (int d, String n, double s) 
+	// this function inserts a new element at the top of the list 
+    {
+        node temp = search(d);
+        if (temp != null)
+        {
+            System.out.println("This ID already exists.");
+            return;
+        }
+        temp = new node (d,n,s,null,null);
+        if (First == null)
+        {
+            First = Last = temp;
+            return;
+        }
+        if (First == Last)
+        {
+            First.setNext(temp);
+            temp.setPrev(First);
+            Last = temp;
+            return;
+        }
+        if (d < First.getId())
+        {
+            temp.setNext(First);
+            First.setPrev(temp);
+            First = temp;
+            return;
+        }
+        if (d > Last.getId())
+        {
+            Last.setNext(temp);
+            temp.setPrev(Last);
+            Last = temp;
+            return;
+        }
+        node p = First;
+        node cur = First.getNext();
+        while (cur.getId() < d)
+        {
+            p = cur;
+            cur = cur.getNext();
+        }
+        temp.setPrev(p);
+        temp.setNext(cur);
+        p.setNext(temp);
+        cur.setPrev(temp);
+    }
+    
+    public void removeId(int d) // removes the element the id number 
+    {
+        if (First.getId() == d) {
+			First = First.getNext();
+			if (First != null) {
+				First.setPrev(null);
+				return;
+			}
+			
+			if (First == null) {
+				Last = null;
+				return;
+			}
+			
+		}
+		if (Last.getId() == d) {
+			Last = Last.getPrev();
+			Last.setNext(null);
+			return;
+		}
+        
+        node temp = First;
+        while (temp != null && temp.getId() != d)
+        {
+            temp = temp.getNext();
+        }
+        if (temp == null)
+        {
+            System.out.println("Not found");
+            return;
+        }
+        // to remove the element, connect the previous element with the next element
+        temp.getPrev().setNext(temp.getNext()); 
+        temp.getNext().setPrev(temp.getPrev());
+        
+    }
+        
+    public void printNormal() // prints the list in normal order
+    {
+        if (isEmpty())
+        {
+            System.out.println("No elements");
+            return;
+        }
+        System.out.println("Printing in Normal order:");
+        node temp = First;
+        while (temp != null)
+        {
+            temp.printData();
+            temp = temp.getNext();
+        }
+        System.out.println();
+    }
+    
+    public void printReverse() // prints the list in normal order
+    {
+        if (isEmpty())
+        {
+            System.out.println("No elements");
+            return;
+        }
+        System.out.println("Printing in Reverse order:");
+        node temp = Last;
+        while (temp != null)
+        {
+            temp.printData();
+            temp = temp.getPrev();
+        }
+        System.out.println();
+    }
+
+    public void modify (int d) // modifies an element
+    {
+        Scanner sc = new Scanner(System.in);
+        node temp = search(d);
+        if (temp == null)
+            return;
+        String n; double s; 
+        System.out.print("Enter new name & salary: " );
+        n = sc.next();
+        s = sc.nextDouble();
+        
+        temp.setName(n);
+        temp.setSalary(s);
+    }
+    
+    public void Reverse() // reverses the elements
+    {
+        if (First == null || First == Last) // if there is no elements, or one element
+            return;
+            
+        node temp = null;
+        node curr = First;
+        
+        while (curr != null) // reverses the elements “next” which contain addresses
+        {
+            temp = curr.getPrev();
+            curr.setPrev(curr.getNext());
+            curr.setNext(temp);
+            curr = curr.getPrev();
+        }
+        
+        curr = First; // switches the first with the last element
+        First = Last;
+        Last = curr;
+    }
+    
+    public void Sorting () // sorts the list
+    {
+        if (isEmpty() || First == Last) // if there is no elements, or one element
+        {
+            return;
+        }
+            
+        int c = countNodes(); 
+        for (int j = 1; j < c; j++) 
+        {
+            node temp = First;
+            node cur = First.getNext();
+            for (int i = 1; i < c; i++) 
+            {
+                if (temp.getSalary() > cur.getSalary()) // if the order is not sorted
+                {
+                    int d = temp.getId();
+                    String n = temp.getName();
+                    double s = temp.getSalary();
+                    temp.setId(cur.getId()); // replace the id between the elements
+                    temp.setName(cur.getName()); // replace the name between the elements
+                    temp.setSalary(cur.getSalary()); // replace the salary between the elements
+                    cur.setId(d);
+                    cur.setName(n);
+                    cur.setSalary(s);
+                    
+                }
+                temp = cur; // move temp to the next element
+                cur = cur.getNext(); // move cur to the next element
+            }
+        }
+    }
+    
+    public int countNodes () // counts the number of elements in the list
+    {
+        node temp = First;
+        int c = 0;
+        while (temp != null)
+        {
+            c++;
+            temp = temp.getNext();
+        }
+        return c;
+    }
+    
+    public void statistics (int num)
+    {
+        
+        if (isEmpty())
+        {
+            System.out.print("No elements");
+            return;
+        }
+        Sorting();
+        
+        if (num > countNodes() || num < 1) // the number shouldn't be larger than the list nor less than 1
+        {
+            System.out.println("Number should be between 1 and " + countNodes());
+            return;
+        }
+        
+        node temp = First;
+        for (int i = 1; i < num; i++) // for loop to move the temp address to desired location
+        {
+            temp = temp.getNext(); 
+        }
+        
+        System.out.println("\nThe " + num + "th minimum is: ");
+        temp.printData();
+        
+        temp = Last;
+        for (int i = 1; i < num; i++) // for loop to move the temp address to desired location
+        {
+            temp = temp.getPrev();
+        }
+        
+        System.out.println("\nThe " + num + "th maximum is: ");
+        temp.printData();
+    }
+    
+    public void push (int d, String n, double s) {
+        node temp = new node (d,n,s,null,null);
+        if (First == null)
+        {
+            First = Last = temp;
+            return;
+        }
+    
+		temp.setNext(First);
+		First.setPrev(temp);
+		First = temp;
+	}
+	public void pop () {
+	    First = First.getNext();
+	    if (First != null)
+		    First.setPrev(null);
+			
+		if (First == null)
+			Last = null;
+		return;
+		
+	}
+	
+	public void clearlist () {
+	    while (First != null) {
+	        pop();
+	    }
+	}
+	
+}
+
+
+
+
+
+
